@@ -3,14 +3,16 @@
 #' Create a DESeqDataSet object using tximport and design terms from a design file.
 #'
 #' @param design_file CSV file path or data.frame with sample metadata.
-#' @param design_terms Character vector of terms for the model formula.
+#' @param output File path to output directory
+#' @param terms Character vector of terms for the model formula.
 #' @param csv Logical, TRUE if design_file is a CSV.
+#' @param mincounts Integer, minimum counts filtering threshold
 #' @param filter Integer, minimum count filter threshold.
 #' @param save Logical, whether to save the DESeq object as an RDS.
 #'
 #' @return A DESeqDataSet object
 #' @export
-DESeqHelperTxi <- function(design_file, terms = c("condition"), csv = TRUE, filter = 2) {
+DESeqHelperTxi <- function(design_file, output  = ".", terms = c("condition"), csv = TRUE, save = TRUE, mincounts = 5, filter = 2) {
 
   # import design file
   if (csv) {
@@ -25,8 +27,6 @@ DESeqHelperTxi <- function(design_file, terms = c("condition"), csv = TRUE, filt
     samples <- design_file
   }
 
-  # this sets the path to the output
-  output <- file.path(out, file_prefix)
   message(paste("Starting", file_prefix, "samples! \n"))
 
   # Add path column for tximport
@@ -65,7 +65,7 @@ DESeqHelperTxi <- function(design_file, terms = c("condition"), csv = TRUE, filt
   dds <- DESeqDataSetFromTximport(txi, samples, formula)
 
   # Filtering
-  keep <- rowSums(counts(dds) >= 5) >= filter
+  keep <- rowSums(counts(dds) >= mincounts) >= filter
   dds <- dds[keep, ]
   dds <- DESeq(dds)
 
