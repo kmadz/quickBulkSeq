@@ -19,7 +19,7 @@ DESeqHelperTxi <- function(design_file, output  = ".", terms = c("condition"), c
     # gsub searches for the ".csv" file suffix and removes it to extract the file prefix
     file_prefix <- gsub(pattern = ".csv", replacement = "", design_file) %>%
       gsub(pattern = ".*design_", replacement = "")
-    samples <- read.csv(file.path(main, design_file))
+    samples <- read.csv(design_file)
   } else {
     # otherwise extract the name from the object presented
     name <- deparse(substitute(design_file))
@@ -34,7 +34,7 @@ DESeqHelperTxi <- function(design_file, output  = ".", terms = c("condition"), c
     mutate(path = file.path(folder, file, "abundance.h5"))
 
   # Validate selected design terms
-  missing_terms <- setdiff(design_terms, colnames(samples))
+  missing_terms <- setdiff(terms, colnames(samples))
   if (length(missing_terms) > 0) {
     stop(paste("The following design terms are not found in the design file:",
                paste(missing_terms, collapse = ", ")))
@@ -53,13 +53,13 @@ DESeqHelperTxi <- function(design_file, output  = ".", terms = c("condition"), c
   samples <- samples %>%
     as.data.frame() %>%
     column_to_rownames("sample") %>%
-    select(all_of(design_terms))
+    select(all_of(terms))
 
   # Convert all selected columns to factors
-  samples[design_terms] <- lapply(samples[design_terms], factor)
+  samples[terms] <- lapply(samples[terms], factor)
 
   # Build formula
-  formula <- as.formula(paste("~", paste(design_terms, collapse = " + ")))
+  formula <- as.formula(paste("~", paste(terms, collapse = " + ")))
 
   # Create DESeqDataSet
   dds <- DESeqDataSetFromTximport(txi, samples, formula)

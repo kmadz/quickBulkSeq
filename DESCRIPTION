@@ -5,13 +5,23 @@ Authors@R:
     person("Karthik", "Madhusudhanan", , "karthikmprojects@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0008-4504-2729"))
 Description: What the package does (one paragraph).
-License: `use_mit_license()`
+License: MIT + file LICENSE
+Depends:
+    DESeq2,
+    ggrepel,
+    tidyverse,
+    tximport,
+    rlang
+Imports: 
+    AnnotationDbi,
+    clusterProfiler,
+    DOSE,
+    EnhancedVolcano,
+    org.Hs.eg.db,
+    pheatmap,
+    rhdf5,
+    rlang,
+    tidyverse
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Imports: 
-    cli,
-    glue,
-    lifecycle,
-    rlang,
-    withr

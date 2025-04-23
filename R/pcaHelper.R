@@ -1,36 +1,61 @@
-pcaHelper <- function(dds, title = "",  label = "", PC1 = 1, PC2 = 2, save = TRUE, output = ".", saveToDir = FALSE) {
-  if (saveToDir) {
-    if (class(dds) == "character") {
-      dir <- dirname(dds)
-      title <- gsub(".*dds_", "", dds)
-      title <- gsub(".rds", "", title)
+#' pcaHelper
+#'
+#' Create a PCA plot that can also adjust for batch effects.
+#'
+#' @param dds DESeqDataSet object or file path to dds RDS object
+#' @param title Character, title of the plot
+#' @param label Character, additional text, may be removed
+#' @param PC1 Integer, first principal component
+#' @param PC2 Integer, second principal component
+#' @param intgroup Character or character vector indicating which variables in colData to use for grouping
+#' @param batch Logical, apply batch correction using the 'year' column if TRUE
+#' @param save Logical, save plot to output directory if TRUE
+#' @param output Character, file path to output directory, default is current directory
+#' @param saveToDir Logical, extract output directory and title from file path if TRUE
+#' @param width Numeric, width of the saved plot in pixels
+#' @param height Numeric, height of the saved plot in pixels
+#'
+#' @return A PCA ggplot object
+#' @export
+pcaHelper <- function(dds, title = "", label = "", PC1 = 1, PC2 = 2, intgroup = "condition",
+                      batch = FALSE, save = TRUE, output = ".", saveToDir = FALSE,
+                      width = 1600, height = 1200) {
 
+  if (is.character(dds)) {
+    dds_path <- dds
+    dds <- readRDS(dds_path)
+    if (saveToDir) {
+      output <- dirname(dds_path)
+      title <- gsub(".*dds_", "", dds_path)
+      title <- gsub(".rds", "", title)
       if (grepl("_", title)) {
         title <- gsub("_", " ", title)
       }
-    } else {
-      stop("Error in saveToDir: dds is not a character and cannot have its directory extracted")
     }
-  } else {
-    dir <- output
+  } else if (!inherits(dds, "DESeqDataSet")) {
+    stop("dds must be either a DESeqDataSet object or a valid file path to an RDS object.")
   }
 
-  dds <- readRDS(dds)
   vsd <- vst(dds, blind = FALSE)
 
-  assay(vsd) <- limma::removeBatchEffect(assay(vsd), batch = vsd$year)
+  if (batch) {
+    assay(vsd) <- limma::removeBatchEffect(assay(vsd), batch = vsd$year)
+  }
 
-  z <- plotPCA(vsd,intgroup=c("condition"),ntop=500, pcsToUse = PC1:PC2)
-  z <- z + geom_label_repel(aes(label = name), max.overlaps = 28, force = 3)
-  z <- z + ggtitle(label = paste(title, " PCA ", PC1, ":", PC2, sep = ""))
-  # plot(z)
-  #
-  # ggsave(
-  #   paste(dir, "/", title, label, " PCA.png", sep = ""),
-  #   width = width,
-  #   height = height,
-  #   dpi = 300,
-  #   units = "px"
-  # )
-  return(z)
+  PCA <- plotPCA(vsd, intgroup = intgroup, ntop = 500, pcsToUse = PC1:PC2)
+  PCA <- PCA + geom_label_repel(aes(label = name), max.overlaps = 28, force = 3)
+  PCA <- PCA + ggtitle(paste(title, " PCA ", PC1, ":", PC2, sep = ""))
+
+  if (save) {
+    ggsave(
+      filename = file.path(output, paste0(title, label, " PCA.png")),
+      plot = PCA,
+      width = width,
+      height = height,
+      dpi = 300,
+      units = "px"
+    )
+  }
+
+  return(PCA)
 }
