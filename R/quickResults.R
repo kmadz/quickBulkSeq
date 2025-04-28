@@ -51,7 +51,7 @@ quickResults <- function(file,
     stop("file must be either a DESeqDataSet object or a valid file path to an RDS object.")
   }
 
-  message(paste("Starting results for", file_prefix, "samples \n", sep = " "))
+  message(paste("Starting results for", title, "samples \n", sep = " "))
 
   dds <- readRDS(file)
 
@@ -83,7 +83,6 @@ quickResults <- function(file,
     final_res <- res_df
   }
 
-
   # save results as a .csv file
   if (save) {
     path <- file.path(output, file_prefix)
@@ -94,17 +93,7 @@ quickResults <- function(file,
 
     write_csv(
       final_res,
-      file = paste(
-        path,
-        "/",
-        file_prefix,
-        ".",
-        num,
-        ".vs.",
-        denom,
-        ".RESULTS.csv",
-        sep = ""
-      )
+      file = file.path(path, file_prefix, paste(".", num, ".vs.", denom, ".RESULTS.csv", sep = ""))
     )
   }
 

@@ -5,7 +5,6 @@
 #' @param design_file CSV file path or data.frame with sample metadata.
 #' @param output File path to output directory
 #' @param terms Character vector of terms for the model formula.
-#' @param csv Logical, TRUE if design_file is a CSV.
 #' @param mincounts Integer, minimum counts filtering threshold
 #' @param filter Integer, minimum count filter threshold.
 #' @param save Logical, whether to save the DESeq object as an RDS.
@@ -23,24 +22,27 @@ quickDESeq <- function(design_file,
                            output  = ".",
                            terms = c("condition"),
                            alignType = "kallisto",
-                           csv = TRUE,
                            save = TRUE,
                            mincounts = 5,
                            filter = 2) {
 
   # import design file
-  if (csv) {
-    # gsub searches for the ".csv" file suffix and removes it to extract the file prefix
-    file_prefix <- gsub(pattern = ".csv", replacement = "", design_file) %>%
-      gsub(pattern = paste(".*", pattern, sep = ""), replacement = "") #".*design_"
-    file_prefix
-    samples <- read.csv(design_file)
-  } else {
-    # otherwise extract the name from the object presented
-    name <- deparse(substitute(design_file))
-    file_prefix <- gsub(pattern = ".*design", replacement = "", name)
-    samples <- design_file
-  }
+  sampleData <- tableHandler(design_file, pattern)
+  samples <- sampleData$samples
+  file_prefix <- sampleData$file_prefix
+
+  # if (csv) {
+  #   # gsub searches for the ".csv" file suffix and removes it to extract the file prefix
+  #   file_prefix <- gsub(pattern = ".csv", replacement = "", design_file) %>%
+  #     gsub(pattern = paste(".*", pattern, sep = ""), replacement = "") #".*design_"
+  #   file_prefix
+  #   samples <- read.csv(design_file)
+  # } else {
+  #   # otherwise extract the name from the object presented
+  #   name <- deparse(substitute(design_file))
+  #   file_prefix <- gsub(pattern = ".*design_", replacement = "", name)
+  #   samples <- design_file
+  # }
 
   message(paste("Starting", file_prefix, "samples! \n"))
 
@@ -75,13 +77,13 @@ quickDESeq <- function(design_file,
     ignoreAfterBar = TRUE
   )
 
-  # Subset sample data for DESeq
+  # rearrange sample data so it's compatible with DESeq
   samples <- samples %>%
     as.data.frame() %>%
     column_to_rownames("sample") %>%
     select(all_of(terms))
 
-  # Convert all selected columns to factors
+  # convert all selected columns to factors
   samples[terms] <- lapply(samples[terms], factor)
 
   # Build formula
@@ -95,13 +97,12 @@ quickDESeq <- function(design_file,
   dds <- dds[keep, ]
   dds <- DESeq(dds)
 
-  # check if output directory exists, and if not, create it
-  if (!dir.exists(output)) {
-    dir.create(output)
-  }
-
   # save DESeqDataSet as a .rds file to output directory
   if (save) {
+    # check if output directory exists, and if not, create it
+    if (!dir.exists(output)) {
+      dir.create(output)
+    }
     saveRDS(dds, file.path(output, paste0("dds_", file_prefix, ".rds")))
   }
 

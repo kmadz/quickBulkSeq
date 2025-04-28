@@ -10,7 +10,6 @@ quickDESeq(
   output = ".",
   terms = c("condition"),
   alignType = "kallisto",
-  csv = TRUE,
   save = TRUE,
   mincounts = 5,
   filter = 2
@@ -22,8 +21,6 @@ quickDESeq(
 \item{output}{File path to output directory}
 
 \item{terms}{Character vector of terms for the model formula.}
-
-\item{csv}{Logical, TRUE if design_file is a CSV.}
 
 \item{save}{Logical, whether to save the DESeq object as an RDS.}
 
