@@ -7,6 +7,7 @@
 quickResults(
   file,
   base = "condition",
+  title = "",
   num = "",
   denom = "",
   output = ".",

@@ -13,12 +13,12 @@
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate select
 #' @importFrom tximport tximport
-#' @importFrom tibble column_to_rownames
+#' @importFrom tibble column_to_rownames enframe deframe
 #' @importFrom rhdf5 h5closeAll
+#' @importFrom DESeq2 DESeqDataSetFromTximport DESeq counts
 #' @return A DESeqDataSet object
 #' @export
 quickDESeq <- function(design_file,
-                           t2g = "",
                            pattern = "design_",
                            output  = ".",
                            terms = c("condition"),

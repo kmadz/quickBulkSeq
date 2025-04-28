@@ -6,7 +6,6 @@
 \usage{
 quickDESeq(
   design_file,
-  t2g = "",
   pattern = "design_",
   output = ".",
   terms = c("condition"),

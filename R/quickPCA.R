@@ -17,12 +17,12 @@
 #'
 #' @importFrom DESeq2 vst plotPCA
 #' @importFrom limma removeBatchEffect
-#' @importFrom ggplot2 ggsave ggtitle
+#' @importFrom ggplot2 ggsave ggtitle aes
 #' @importFrom ggrepel geom_label_repel
 #'
 #' @return A PCA ggplot object
 #' @export
-pcaHelper <- function(dds, title = "", label = "", PC1 = 1, PC2 = 2, intgroup = "condition",
+quickPCA <- function(dds, title = "", label = "", PC1 = 1, PC2 = 2, intgroup = "condition",
                       blind = FALSE, batch = NULL, save = FALSE, output = ".", saveToDir = FALSE,
                       width = 1600, height = 1200) {
 

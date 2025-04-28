@@ -16,6 +16,7 @@
 #'
 quickResults <- function(file,
                          base = "condition",
+                         title = "",
                          num = "",
                          denom = "",
                          output = ".",
@@ -25,13 +26,29 @@ quickResults <- function(file,
     stop("Numerator and denominator for results not specified")
   }
 
-  file_prefix <- gsub(pattern = ".rds", replacement = "", file) %>%
-    gsub(pattern = ".*dds_", replacement = "")
 
-  path <- file.path(output, file_prefix)
+  if (is.character(dds)) {
+    dds_path <- dds
+    dds <- readRDS(dds_path)
 
-  if (!dir.exists(path)) {
-    dir.create(path)
+    if (saveToDir) {
+      output <- dirname(dds_path)
+      title <- gsub(".*dds_", "", dds_path)
+      title <- gsub(".rds", "", title)
+
+      if (grepl("_", title)) {
+        title <- gsub("_", " ", title)
+      }
+    }
+
+    file_prefix <- gsub(pattern = ".rds", replacement = "", file) %>%
+      gsub(pattern = ".*dds_", replacement = "")
+
+  } else if (inherits(dds, "DESeqDataSet")) {
+    file_prefix <- deparse(substitute(file))
+
+  } else {
+    stop("file must be either a DESeqDataSet object or a valid file path to an RDS object.")
   }
 
   message(paste("Starting results for", file_prefix, "samples \n", sep = " "))
@@ -47,7 +64,7 @@ quickResults <- function(file,
     type = "ashr"
   )
 
-  # convert results to dataframe and append gene names using t2g
+  # convert results to dataframe and append gene names using g2name
   res_df <- as.data.frame(res) %>%
     rownames_to_column("gene_id") %>%
     as_tibble() %>%
@@ -66,12 +83,15 @@ quickResults <- function(file,
     final_res <- res_df
   }
 
-  if (!dir.exists(path)) {
-    dir.create(file.path(path))
-  }
 
   # save results as a .csv file
   if (save) {
+    path <- file.path(output, file_prefix)
+
+    if (!dir.exists(path)) {
+      dir.create(path)
+    }
+
     write_csv(
       final_res,
       file = paste(
