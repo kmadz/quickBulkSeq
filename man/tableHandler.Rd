@@ -4,7 +4,7 @@
 \alias{tableHandler}
 \title{tableHandler}
 \usage{
-tableHandler(design_file)
+tableHandler(design_file, pattern)
 }
 \arguments{
 \item{design_file}{a design file of either .csv or dataframe type}

@@ -5,11 +5,18 @@
 #' @return a list specific to the type of object
 #' @export
 #'
-ddsHandler <- function(file, output = "."){
+ddsHandler <- function(file, output = ".") {
+  if (is.null(file) | is.na(file)) {
+    stop("Please enter a filepath to a DESeqDataSet .rds file OR a DESeqDataSet object, input was either null or NA")
+  }
+
+
   if (is.character(dds)) {
     dds <- readRDS(file)
 
-    output <- dirname(dds_path)
+    if (output == ".") {
+      output <- dirname(dds_path)
+    }
 
     title <- gsub(".*dds_", "", dds_path)
     title <- gsub(".rds", "", title)
@@ -21,7 +28,12 @@ ddsHandler <- function(file, output = "."){
     }
 
     # return a list with information exclusive to this instance of the function
-    final <- list(dds = dds, output = output, title = title, file_prefix = file_prefix)
+    final <- list(
+      dds = dds,
+      output = output,
+      title = title,
+      file_prefix = file_prefix
+    )
 
     return(final)
 
@@ -37,7 +49,12 @@ ddsHandler <- function(file, output = "."){
       title <- gsub("_", " ", title)
     }
 
-    final <- list(dds = dds, output = output, title = title, file_prefix = file_prefix)
+    final <- list(
+      dds = dds,
+      output = output,
+      title = title,
+      file_prefix = file_prefix
+    )
 
     return(final)
   } else {
@@ -52,19 +69,26 @@ ddsHandler <- function(file, output = "."){
 #' @return a list with a samples table and a file prefix
 #' @export
 #'
-tableHandler <- function(design_file, pattern) {
+tableHandler <- function(design_file, pattern = "design_") {
   if (is.character(design_file)) {
+
     file_prefix <- gsub(pattern = ".csv", replacement = "", design_file) %>%
-      gsub(pattern = paste(".*", pattern, sep = ""), replacement = "") #".*design_"
+      gsub(pattern = paste(".*", pattern, sep = ""),
+           replacement = "") #".*design_"
+
     samples <- read.csv(design_file)
 
     final <- list(samples = samples, file_prefix = file_prefix)
     return(final)
 
   } else {
+
     # otherwise extract the name from the object presented
     name <- deparse(substitute(design_file))
-    file_prefix <- gsub(pattern = paste(".*", pattern, sep = ""), replacement = "", name)
+    file_prefix <- gsub(pattern = paste(".*", pattern, sep = ""),
+                        replacement = "",
+                        name)
+
     samples <- design_file
 
     final <- list(samples = samples, file_prefix = file_prefix)

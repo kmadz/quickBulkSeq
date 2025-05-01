@@ -20,40 +20,43 @@ quickResults <- function(file,
                          num = "",
                          denom = "",
                          output = ".",
+                         filter = FALSE,
+                         padj = 0.05,
                          save = TRUE,
                          includeNormCounts = TRUE) {
   if (num == "" | denom == "") {
     stop("Numerator and denominator for results not specified")
   }
 
+  file <- ddsHandler(file, output = output)
 
-  if (is.character(dds)) {
-    dds_path <- dds
-    dds <- readRDS(dds_path)
+  # if (is.character(dds)) {
+  #   dds_path <- dds
+  #   dds <- readRDS(dds_path)
+  #
+  #   if (saveToDir) {
+  #     output <- dirname(dds_path)
+  #     title <- gsub(".*dds_", "", dds_path)
+  #     title <- gsub(".rds", "", title)
+  #
+  #     if (grepl("_", title)) {
+  #       title <- gsub("_", " ", title)
+  #     }
+  #   }
+  #
+  #   file_prefix <- gsub(pattern = ".rds", replacement = "", file) %>%
+  #     gsub(pattern = ".*dds_", replacement = "")
+  #
+  # } else if (inherits(dds, "DESeqDataSet")) {
+  #   file_prefix <- deparse(substitute(file))
+  #
+  # } else {
+  #   stop("file must be either a DESeqDataSet object or a valid file path to an RDS object.")
+  # }
 
-    if (saveToDir) {
-      output <- dirname(dds_path)
-      title <- gsub(".*dds_", "", dds_path)
-      title <- gsub(".rds", "", title)
+  message(paste("Starting results for", file$title, "samples \n", sep = " "))
 
-      if (grepl("_", title)) {
-        title <- gsub("_", " ", title)
-      }
-    }
-
-    file_prefix <- gsub(pattern = ".rds", replacement = "", file) %>%
-      gsub(pattern = ".*dds_", replacement = "")
-
-  } else if (inherits(dds, "DESeqDataSet")) {
-    file_prefix <- deparse(substitute(file))
-
-  } else {
-    stop("file must be either a DESeqDataSet object or a valid file path to an RDS object.")
-  }
-
-  message(paste("Starting results for", title, "samples \n", sep = " "))
-
-  dds <- readRDS(file)
+  dds <- readRDS(file$dds)
 
   # generate results table
   res <- lfcShrink(
@@ -69,7 +72,7 @@ quickResults <- function(file,
     rownames_to_column("gene_id") %>%
     as_tibble() %>%
     left_join(g2name, by = "gene_id") %>%
-    arrange(pvalue)
+    arrange(padj)
 
   if (includeNormCounts) {
     # generate normalized counts dataframe
@@ -85,7 +88,7 @@ quickResults <- function(file,
 
   # save results as a .csv file
   if (save) {
-    path <- file.path(output, file_prefix)
+    path <- file.path(file$output, file$file_prefix)
 
     if (!dir.exists(path)) {
       dir.create(path)
@@ -93,11 +96,18 @@ quickResults <- function(file,
 
     write_csv(
       final_res,
-      file = file.path(path, file_prefix, paste(".", num, ".vs.", denom, ".RESULTS.csv", sep = ""))
+      file = file.path(path, file$file_prefix, paste(".", num, ".vs.", denom, ".RESULTS.csv", sep = ""))
     )
   }
 
-  message(paste("Finished results for", file_prefix, "samples :)\n", sep = " "))
+  message(paste("Finished results for", file$file_prefix, "samples :)\n", sep = " "))
 
-  return(final_res)
+  if (!filter) return(final_res)
+
+  final_res <- na.omit(final_res)
+  final_res <- final_res[final_res$padj < padj, ]
+
+  return (final_res)
+
+
 }

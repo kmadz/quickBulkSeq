@@ -7,6 +7,7 @@
 quickHeatmap(
   file = NULL,
   title = "",
+  output = "",
   targets = NULL,
   info = "condition",
   clustRows = TRUE,

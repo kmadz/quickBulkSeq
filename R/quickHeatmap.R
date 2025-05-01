@@ -16,44 +16,25 @@
 #' @export
 #'
 quickHeatmap <- function(file = NULL,
-                          title = "",
-                          targets = NULL,
-                          info = 'condition',
-                          clustRows = TRUE,
-                          clustCols = TRUE,
-                          labelRows = TRUE,
-                          n = 50,
-                          num = "dcas9_ANRIL",
-                          denom = "dcas9_NONE",
-                          color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)) {
+                         title = "",
+                         output = ".",
+                         targets = NULL,
+                         info = 'condition',
+                         clustRows = TRUE,
+                         clustCols = TRUE,
+                         labelRows = TRUE,
+                         n = 50,
+                         num = "dcas9_ANRIL",
+                         denom = "dcas9_NONE",
+                         color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)) {
 
-  ### replace here the file handler for .rds vs dataframe
+  file <- ddsHandler(file, ".")
 
-
-
-  # if (is.character(dds)) {
-  #
-  #   if (saveToDir) {
-  #     output <- dirname(dds_path)
-  #     title <- gsub(".*dds_", "", dds_path)
-  #     title <- gsub(".rds", "", title)
-  #     if (grepl("_", title)) {
-  #       title <- gsub("_", " ", title)
-  #     }
-  #   }
-  # } else if (!inherits(dds, "DESeqDataSet")) {
-  #   stop("dds must be either a DESeqDataSet object or a valid file path to an RDS object.")
-  # }
-
-  dir <- dirname(file)
-  dds <- readRDS(file)
-
-  labs <- gsub(".*/results/", "", dir)
+  labs <- gsub(".*/results/", "", file$output)
   if (grepl("_", labs)) {
     labs <- gsub("_", " ", labs)
   }
 
-  # save the colData
   annot_info <- as.data.frame(colData(dds)[info])
 
   # save a Variance Stabilized Transformation of dds
@@ -67,18 +48,18 @@ quickHeatmap <- function(file = NULL,
     type = "ashr"
   )
 
-  # Convert results to data frame and add gene_id
+  # converts results to tibble and arrange by p value
   res_df <- as.data.frame(res) %>%
     rownames_to_column("gene_id") %>%
     as_tibble() %>%
     left_join(g2name, by = "gene_id") %>%
-    arrange(pvalue)
+    arrange(padj)
 
-  # Use normalized counts
+  # get normalized counts
   norm_df <- as.data.frame(counts(dds, normalized = TRUE)) %>%
     rownames_to_column("gene_id")
 
-  # Merge results with assay data
+  # merge normalized counts to results
   res <- left_join(res_df, norm_df, by = "gene_id")
 
   filtered_res <- na.omit(res)
