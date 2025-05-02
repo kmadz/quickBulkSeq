@@ -19,6 +19,7 @@ Imports:
     magrittr,
     org.Hs.eg.db,
     pheatmap,
+    readr,
     rhdf5,
     rlang,
     tibble,

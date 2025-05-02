@@ -6,11 +6,16 @@
 #' @param denom Character, The denominator of the comparison
 #' @param includeNormCounts Logical, whether to include normalized counts in results table, default TRUE
 #' @param save Logical, whether to save the file as a .csv to an output path
+#' @param title Character, title of the file, defaults to the file name
+#' @param output Character, output directory path, default current directory
+#' @param filter Logical, whether to filter for significant DEGs
+#' @param padj Double, p-adjusted value threshold for filtering if filter = TRUE, default 0.05
 #'
 #' @importFrom DESeq2 lfcShrink
 #' @importFrom tibble rownames_to_column as_tibble
 #' @importFrom dplyr left_join arrange
 #' @importFrom magrittr %>%
+#' @importFrom readr write_csv
 #' @return A results table in dataframe format
 #' @export
 #'
@@ -19,7 +24,7 @@ quickResults <- function(file,
                          title = "",
                          num = "",
                          denom = "",
-                         output = ".",
+                         output = "",
                          filter = FALSE,
                          padj = 0.05,
                          save = TRUE,
@@ -28,7 +33,7 @@ quickResults <- function(file,
     stop("Numerator and denominator for results not specified")
   }
 
-  file <- ddsHandler(file, output = output)
+  input <- ddsHandler(file, output = output, title = title)
 
   # if (is.character(dds)) {
   #   dds_path <- dds
@@ -54,13 +59,11 @@ quickResults <- function(file,
   #   stop("file must be either a DESeqDataSet object or a valid file path to an RDS object.")
   # }
 
-  message(paste("Starting results for", file$title, "samples \n", sep = " "))
-
-  dds <- readRDS(file$dds)
+  message(paste("Starting results for", input$title, "samples \n", sep = " "))
 
   # generate results table
   res <- lfcShrink(
-    dds,
+    input$dds,
     alpha = 0.05,
     contrast = c(base, num, denom),
     parallel = FALSE,
@@ -88,7 +91,7 @@ quickResults <- function(file,
 
   # save results as a .csv file
   if (save) {
-    path <- file.path(file$output, file$file_prefix)
+    path <- file.path(input$output, input$file_prefix)
 
     if (!dir.exists(path)) {
       dir.create(path)
@@ -96,11 +99,11 @@ quickResults <- function(file,
 
     write_csv(
       final_res,
-      file = file.path(path, file$file_prefix, paste(".", num, ".vs.", denom, ".RESULTS.csv", sep = ""))
+      file = file.path(path, paste("RES-", num, "-vs-", denom, ".csv", sep = ""))
     )
   }
 
-  message(paste("Finished results for", file$file_prefix, "samples :)\n", sep = " "))
+  message(paste("Finished results for", input$file_prefix, "samples :)\n", sep = " "))
 
   if (!filter) return(final_res)
 

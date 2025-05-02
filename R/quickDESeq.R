@@ -27,7 +27,7 @@ quickDESeq <- function(design_file,
                            filter = 2) {
 
   # import design file
-  sampleData <- tableHandler(design_file, pattern)
+  sampleData <- designHandler(design_file, pattern)
   samples <- sampleData$samples
   file_prefix <- sampleData$file_prefix
 

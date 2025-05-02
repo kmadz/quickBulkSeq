@@ -4,10 +4,12 @@
 \alias{ddsHandler}
 \title{ddsHandler}
 \usage{
-ddsHandler(file, output = ".")
+ddsHandler(file, output = ".", title = "")
 }
 \arguments{
-\item{dds}{}
+\item{file}{Filepath to a DESeqDataSet .rds file OR a DESeqDataSet object}
+
+\item{output}{Path to output directory, default current directory}
 }
 \value{
 a list specific to the type of object
