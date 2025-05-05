@@ -35,30 +35,6 @@ quickResults <- function(file,
 
   input <- ddsHandler(file, output = output, title = title)
 
-  # if (is.character(dds)) {
-  #   dds_path <- dds
-  #   dds <- readRDS(dds_path)
-  #
-  #   if (saveToDir) {
-  #     output <- dirname(dds_path)
-  #     title <- gsub(".*dds_", "", dds_path)
-  #     title <- gsub(".rds", "", title)
-  #
-  #     if (grepl("_", title)) {
-  #       title <- gsub("_", " ", title)
-  #     }
-  #   }
-  #
-  #   file_prefix <- gsub(pattern = ".rds", replacement = "", file) %>%
-  #     gsub(pattern = ".*dds_", replacement = "")
-  #
-  # } else if (inherits(dds, "DESeqDataSet")) {
-  #   file_prefix <- deparse(substitute(file))
-  #
-  # } else {
-  #   stop("file must be either a DESeqDataSet object or a valid file path to an RDS object.")
-  # }
-
   message(paste("Starting results for", input$title, "samples \n", sep = " "))
 
   # generate results table
@@ -79,7 +55,7 @@ quickResults <- function(file,
 
   if (includeNormCounts) {
     # generate normalized counts dataframe
-    norm_df <- as.data.frame(counts(dds, normalized = TRUE)) %>%
+    norm_df <- as.data.frame(counts(input$dds, normalized = TRUE)) %>%
       rownames_to_column("gene_id")
 
     # merge normalized counts to results table

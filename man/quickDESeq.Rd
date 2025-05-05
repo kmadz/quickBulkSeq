@@ -18,9 +18,13 @@ quickDESeq(
 \arguments{
 \item{design_file}{CSV file path or data.frame with sample metadata.}
 
+\item{pattern}{Pattern to substitue out for the design file when extracting title, default "design_"}
+
 \item{output}{File path to output directory}
 
 \item{terms}{Character vector of terms for the model formula.}
+
+\item{alignType}{What type of aligner was used to align BAM files, default "kallisto"}
 
 \item{save}{Logical, whether to save the DESeq object as an RDS.}
 

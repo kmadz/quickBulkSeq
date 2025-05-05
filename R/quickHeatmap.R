@@ -7,11 +7,22 @@
 #' @param clustRows Logical, whether to cluster rows or not. default TRUE
 #' @param clustCols Logical, whether to cluster columns or not, default TRUE
 #' @param labelRows Logical, whether to label rows or not, default TRUE
-#' @param n Integer, number of rows to display, default 50
+#' @param numRows Integer, number of rows to display, default 50
 #' @param num Character, the numerator of the comparison
 #' @param denom Character, the denominator of the comparison
 #' @param color A color palette, default colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)
+#' @param output Character, path to output directory, default current directory
+#' @param padj Double, value for p-adjusted value threshold, default 0.05
+#' @param save Logical, whether to save to output directory or not, default TRUE
 #'
+#' @importFrom pheatmap pheatmap
+#' @importFrom DESeq2 DESeq
+#' @importFrom SummarizedExperiment colData assay
+#' @importFrom magrittr %>%
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom rlist list.reverse
+#'
+#' @import dplyr
 #' @return A heatmap
 #' @export
 #'
@@ -23,25 +34,25 @@ quickHeatmap <- function(file = NULL,
                          clustRows = TRUE,
                          clustCols = TRUE,
                          labelRows = TRUE,
-                         n = 50,
-                         num = "dcas9_ANRIL",
-                         denom = "dcas9_NONE",
+                         numRows = 50,
+                         num = "",
+                         denom = "",
+                         padj = 0.05,
+                         save = TRUE,
                          color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)) {
-
-  file <- ddsHandler(file, ".")
-
-  labs <- gsub(".*/results/", "", file$output)
-  if (grepl("_", labs)) {
-    labs <- gsub("_", " ", labs)
+  if (num == "" | denom == "") {
+    stop("Numerator and denominator for results not specified")
   }
 
-  annot_info <- as.data.frame(colData(dds)[info])
+  input <- ddsHandler(file, ".", title = title)
+  annot_info <- as.data.frame(colData(input$dds)[info])
+
 
   # save a Variance Stabilized Transformation of dds
-  vsd <- vst(dds, blind = FALSE)
+  vsd <- vst(input$dds, blind = FALSE)
 
   res <- lfcShrink(
-    dds,
+    input$dds,
     alpha = 0.05,
     contrast = c("condition", num, denom),
     parallel = FALSE,
@@ -56,51 +67,42 @@ quickHeatmap <- function(file = NULL,
     arrange(padj)
 
   # get normalized counts
-  norm_df <- as.data.frame(counts(dds, normalized = TRUE)) %>%
+  norm_df <- as.data.frame(counts(input$dds, normalized = TRUE)) %>%
     rownames_to_column("gene_id")
 
   # merge normalized counts to results
   res <- left_join(res_df, norm_df, by = "gene_id")
 
   filtered_res <- na.omit(res)
-  filtered_res <- filtered_res[filtered_res$padj < 0.05, ]
+  filtered_res <- filtered_res[filtered_res$padj < padj, ]
+
 
   if (length(filtered_res$padj) <= 1) {
     message("no")
     return()
   }
-  # top_hits_fifty <- filtered_res[order(filtered_res$log2FoldChange), ][1:n, ]
-  # targets <- rownames(top_hits_fifty)
-  # targets <- rownames(filtered_res)
 
-  targets <- filtered_res$gene_id
-  numSigs <- length(targets)
+  if (is.null(targets)) {
+    targets <- filtered_res$gene_name[1:numRows]
+  }
+
+  numSigs <- length(filtered_res)
+
+
   selected_genes <- g2name %>%
-    filter(gene_id %in% targets) %>%
+    filter(gene_name %in% targets) %>%
     arrange(factor(gene_name, levels = targets)) %>%
     distinct(gene_name, .keep_all = TRUE)
 
 
-  # Check which gene_ids from selected_genes are found in the rownames of vsd
   matching_genes <- intersect(selected_genes$gene_id, rownames(assay(vsd)))
-
-  # Subset the assay data using the correct rownames (matching_genes)
   selected_counts <- assay(vsd)[match(matching_genes, rownames(assay(vsd))), ]
 
 
   # define z score function
   zscore <- t(scale(t(selected_counts)))
 
-  if (save) {
-    png(
-      paste(dir, "/", title, " ", labs, "Heatmap.png", sep = ""),
-      width = 2400,
-      height = 1800,
-      res = 300
-    )
-  }
-
-  pheatmap(
+  final <- pheatmap(
     zscore,
     color = color,
     cluster_rows = clustRows,
@@ -112,12 +114,19 @@ quickHeatmap <- function(file = NULL,
     treeheight_row = 0,
     treeheight_col = 0,
     #annotation_colors = ann_colors,
-    main = paste(labs, " ", title, ", ", numSigs, " significant genes", sep = "")  # Title of the heatmap
+    main = paste(input$title, "|", numSigs, "significant genes", sep = " ")  # Title of the heatmap
   )
 
-  if (save) {
-    dev.off()
+  if(save) {
+    ggsave(
+      file.path(input$output, paste(input$title, "Heatmap.png", sep = "_")),
+      width = 2400,
+      height = 1800,
+      dpi = 300,
+      units = "px"
+    )
   }
 
+  return (final)
 }
 

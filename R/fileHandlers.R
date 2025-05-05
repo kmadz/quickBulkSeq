@@ -46,7 +46,7 @@ ddsHandler <- function(file, output = ".", title = "") {
   #   stop("Please enter a filepath to a DESeqDataSet .rds file OR a DESeqDataSet object, input was either null or NA")
   # }
 
-  if (is.character(dds)) {
+  if (is.character(file)) {
     dds <- readRDS(file)
 
     if (output == "") {
@@ -74,7 +74,7 @@ ddsHandler <- function(file, output = ".", title = "") {
 
     return(final)
 
-  } else if (inherits(dds, "DESeqDataSet")) {
+  } else if (inherits(file, "DESeqDataSet")) {
     dds <- file
 
     if (title == "") {
@@ -101,6 +101,15 @@ ddsHandler <- function(file, output = ".", title = "") {
   }
 }
 
+#' resultsHandler
+#'
+#' @param results a path to a results table in the form of "RES-name.csv" or a results table dataframe
+#' @param title title of the results table, defaults to deparsed name
+#' @param output path to save what this table is used for, defaults to current directory
+#'
+#' @return A list containing a results table, title, and output
+#' @export
+#'
 resultsHandler <- function(results,
                            title = "",
                            output = ".") {

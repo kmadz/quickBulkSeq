@@ -19,9 +19,12 @@ Imports:
     magrittr,
     org.Hs.eg.db,
     pheatmap,
+    RColorBrewer,
     readr,
     rhdf5,
     rlang,
+    rlist,
+    SummarizedExperiment,
     tibble,
     tximport
 Encoding: UTF-8

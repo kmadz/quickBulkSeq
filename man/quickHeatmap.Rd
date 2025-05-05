@@ -13,9 +13,11 @@ quickHeatmap(
   clustRows = TRUE,
   clustCols = TRUE,
   labelRows = TRUE,
-  n = 50,
-  num = "dcas9_ANRIL",
-  denom = "dcas9_NONE",
+  numRows = 50,
+  num = "",
+  denom = "",
+  padj = 0.05,
+  save = TRUE,
   color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)
 )
 }
@@ -23,6 +25,8 @@ quickHeatmap(
 \item{file}{A DESeqDataSet or path to a DESeq .rds object}
 
 \item{title}{Character, title of plot}
+
+\item{output}{Character, path to output directory, default current directory}
 
 \item{targets}{Character list, list of target genes to construct heatmap from, defaults to top 50 if empty}
 
@@ -34,11 +38,15 @@ quickHeatmap(
 
 \item{labelRows}{Logical, whether to label rows or not, default TRUE}
 
-\item{n}{Integer, number of rows to display, default 50}
+\item{numRows}{Integer, number of rows to display, default 50}
 
 \item{num}{Character, the numerator of the comparison}
 
 \item{denom}{Character, the denominator of the comparison}
+
+\item{padj}{Double, value for p-adjusted value threshold, default 0.05}
+
+\item{save}{Logical, whether to save to output directory or not, default TRUE}
 
 \item{color}{A color palette, default colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)}
 }

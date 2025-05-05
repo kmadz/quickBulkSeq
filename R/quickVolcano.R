@@ -6,6 +6,12 @@
 #' @param FCcutoff Double, cutoff for log2FoldChange threshold, default 1
 #' @param pCutoff Double, cutoff for p-adjusted value for significance, default 0.05
 #' @param output Character, path to save image to, default current directory
+#' @param targets Character vector, a list of target genes to display instead of the top n genes, default NULL
+#' @param xlim Integer vector in form of c(lowerbound, upperbound), defines x limit for volcano plot
+#' @param ylim Integer vector in form of c(lowerbound, upperbound), defines x limit for volcano plot
+#' @param numTopGenes Number of top genes to display
+#' @param labelSize Double, size of labels
+#' @param displayNumSigs Logical, whether to show how many significant genes, default TRUE
 #'
 #' @importFrom EnhancedVolcano EnhancedVolcano
 #' @importFrom ggplot2 ggsave
@@ -21,7 +27,6 @@ quickVolcano <- function(results,
                                     1.5),
                          ylim = c(0, max(-log10(results[["padj"]]), na.rm = TRUE) + 5),
                          numTopGenes = 10,
-                         showSigs = TRUE,
                          labelSize = 4,
                          save = FALSE,
                          displayNumSigs = TRUE,
@@ -32,7 +37,7 @@ quickVolcano <- function(results,
   res <- input$results
 
   filtered_res <- na.omit(res)
-  filtered_res <- filtered_res[filtered_res$padj < 0.05, ]
+  filtered_res <- filtered_res[filtered_res$padj < pCutoff, ]
 
   if (displayNumSigs) {
     numUp <- nrow(filtered_res[filtered_res$log2FoldChange > 0, ])
@@ -60,7 +65,7 @@ quickVolcano <- function(results,
     labSize = 4,
     title = title,
     subtitle = ifelse(
-      showSigs == TRUE,
+      displayNumSigs == TRUE,
       paste(
         numUp,
         'upregulated DEGs,',

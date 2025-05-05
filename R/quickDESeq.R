@@ -8,6 +8,8 @@
 #' @param mincounts Integer, minimum counts filtering threshold
 #' @param filter Integer, minimum count filter threshold.
 #' @param save Logical, whether to save the DESeq object as an RDS.
+#' @param pattern Pattern to substitue out for the design file when extracting title, default "design_"
+#' @param alignType What type of aligner was used to align BAM files, default "kallisto"
 #'
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate select
@@ -30,19 +32,6 @@ quickDESeq <- function(design_file,
   sampleData <- designHandler(design_file, pattern)
   samples <- sampleData$samples
   file_prefix <- sampleData$file_prefix
-
-  # if (csv) {
-  #   # gsub searches for the ".csv" file suffix and removes it to extract the file prefix
-  #   file_prefix <- gsub(pattern = ".csv", replacement = "", design_file) %>%
-  #     gsub(pattern = paste(".*", pattern, sep = ""), replacement = "") #".*design_"
-  #   file_prefix
-  #   samples <- read.csv(design_file)
-  # } else {
-  #   # otherwise extract the name from the object presented
-  #   name <- deparse(substitute(design_file))
-  #   file_prefix <- gsub(pattern = ".*design_", replacement = "", name)
-  #   samples <- design_file
-  # }
 
   message(paste("Starting", file_prefix, "samples! \n"))
 

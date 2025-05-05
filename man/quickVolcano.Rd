@@ -13,7 +13,6 @@ quickVolcano(
     max(results[["log2FoldChange"]], na.rm = TRUE) + 1.5),
   ylim = c(0, max(-log10(results[["padj"]]), na.rm = TRUE) + 5),
   numTopGenes = 10,
-  showSigs = TRUE,
   labelSize = 4,
   save = FALSE,
   displayNumSigs = TRUE,
@@ -28,7 +27,19 @@ quickVolcano(
 
 \item{output}{Character, path to save image to, default current directory}
 
+\item{targets}{Character vector, a list of target genes to display instead of the top n genes, default NULL}
+
+\item{xlim}{Integer vector in form of c(lowerbound, upperbound), defines x limit for volcano plot}
+
+\item{ylim}{Integer vector in form of c(lowerbound, upperbound), defines x limit for volcano plot}
+
+\item{numTopGenes}{Number of top genes to display}
+
+\item{labelSize}{Double, size of labels}
+
 \item{save}{Logical, whether to save the plot}
+
+\item{displayNumSigs}{Logical, whether to show how many significant genes, default TRUE}
 
 \item{FCcutoff}{Double, cutoff for log2FoldChange threshold, default 1}
 
