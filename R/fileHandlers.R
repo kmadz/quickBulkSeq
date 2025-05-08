@@ -127,6 +127,8 @@ resultsHandler <- function(results,
 
       title <- gsub(pattern = "-", replace = " ", file_prefix) %>%
         gsub(pattern = "_", replace = " ")
+    } else {
+      file_prefix <- ""
     }
   } else {
     stop("input must be either a dataframe  or a valid file path to a results table.")
