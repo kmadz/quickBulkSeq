@@ -86,7 +86,7 @@ quickHeatmap <- function(file = NULL,
     targets <- filtered_res$gene_name[1:numRows]
   }
 
-  numSigs <- length(filtered_res)
+  numSigs <- nrow(filtered_res)
 
 
   selected_genes <- g2name %>%
@@ -101,6 +101,14 @@ quickHeatmap <- function(file = NULL,
 
   # define z score function
   zscore <- t(scale(t(selected_counts)))
+
+  png(
+    file.path(input$output, paste(input$title, "Heatmap.png", sep = "_")),
+    width = 2400,
+    height = 1800,
+    res = 300,
+    units = "px"
+  )
 
   final <- pheatmap(
     zscore,
@@ -117,15 +125,7 @@ quickHeatmap <- function(file = NULL,
     main = paste(input$title, "|", numSigs, "significant genes", sep = " ")  # Title of the heatmap
   )
 
-  if(save) {
-    ggsave(
-      file.path(input$output, paste(input$title, "Heatmap.png", sep = "_")),
-      width = 2400,
-      height = 1800,
-      dpi = 300,
-      units = "px"
-    )
-  }
+  dev.off()
 
   return (final)
 }
