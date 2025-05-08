@@ -72,8 +72,6 @@ ddsHandler <- function(file, output = ".", title = "") {
       file_prefix = file_prefix
     )
 
-    return(final)
-
   } else if (inherits(file, "DESeqDataSet")) {
     dds <- file
 
@@ -94,11 +92,10 @@ ddsHandler <- function(file, output = ".", title = "") {
       title = title,
       file_prefix = file_prefix
     )
-
-    return(final)
   } else {
     stop("file must be either a DESeqDataSet object or a valid file path to an RDS object.")
   }
+  return(final)
 }
 
 #' resultsHandler
@@ -116,6 +113,7 @@ resultsHandler <- function(results,
   if (is.data.frame(results)) {
     if (title == "") {
       title <- deparse(substitute(results))
+      file_prefix <- title
       title <- gsub("_", " ", title)
     }
   } else if (is.character(results)) {
@@ -124,16 +122,20 @@ resultsHandler <- function(results,
     }
     results <- as.data.frame(read.csv(results))
     if (title == "") {
-      title <- gsub(".*RES-", "", results) %>%
-        gsub(pattern = ".csv", replace = "") %>%
-        gsub(pattern = "-", replace = " ") %>%
+      file_prefix <- gsub(".*RES-", "", results) %>%
+        gsub(pattern = ".csv", replace = "")
+
+      title <- gsub(pattern = "-", replace = " ", file_prefix) %>%
         gsub(pattern = "_", replace = " ")
     }
+  } else {
+    stop("input must be either a dataframe  or a valid file path to a results table.")
   }
 
   final <- list(results = results,
                 title = title,
-                output = output)
-
+                output = output,
+                file_prefix = file_prefix)
+  return(final)
 }
 
