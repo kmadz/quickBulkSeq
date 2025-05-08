@@ -50,11 +50,11 @@ ddsHandler <- function(file, output = ".", title = "") {
     dds <- readRDS(file)
 
     if (output == "") {
-      output <- dirname(dds_path)
+      output <- dirname(file)
     }
 
     if (title == "") {
-      title <- gsub(".*dds_", "", dds_path)
+      title <- gsub(".*dds_", "", file)
       title <- gsub(".rds", "", title)
     }
 

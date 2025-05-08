@@ -102,13 +102,22 @@ quickHeatmap <- function(file = NULL,
   # define z score function
   zscore <- t(scale(t(selected_counts)))
 
-  png(
-    file.path(input$output, paste(input$title, "Heatmap.png", sep = "_")),
-    width = 2400,
-    height = 1800,
-    res = 300,
-    units = "px"
-  )
+
+  if (save) {
+    path <- file.path(input$output, input$file_prefix)
+
+    if (!dir.exists(path)) {
+      dir.create(path)
+      png(
+        file.path(path, paste(input$title, "Heatmap.png", sep = "_")),
+        width = 2400,
+        height = 1800,
+        res = 300,
+        units = "px"
+      )
+    }
+  }
+
 
   final <- pheatmap(
     zscore,
