@@ -108,14 +108,15 @@ quickHeatmap <- function(file = NULL,
 
     if (!dir.exists(path)) {
       dir.create(path)
-      png(
-        file.path(path, paste(input$title, "Heatmap.png", sep = "_")),
-        width = 2400,
-        height = 1800,
-        res = 300,
-        units = "px"
-      )
     }
+
+    png(
+      file.path(path, paste(input$title, "Heatmap.png", sep = " ")),
+      width = 2400,
+      height = 1800,
+      res = 300,
+      units = "px"
+    )
   }
 
 

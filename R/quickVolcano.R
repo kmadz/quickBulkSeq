@@ -93,14 +93,15 @@ quickVolcano <- function(results,
 
     if (!dir.exists(path)) {
       dir.create(path)
-      ggsave(
-        file.path(path, paste(input$title, "_Volcano.png", sep = "")),
-        width = 2400,
-        height = 1800,
-        dpi = 300,
-        units = "px"
-      )
     }
+
+    ggsave(
+      file.path(path, paste(input$title, "Volcano.png", sep = " ")),
+      width = 2400,
+      height = 1800,
+      dpi = 300,
+      units = "px"
+    )
   }
   return(final)
 }
