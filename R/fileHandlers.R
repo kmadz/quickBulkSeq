@@ -41,7 +41,7 @@ designHandler <- function(design_file, pattern = "design_") {
 #' @return a list specific to the type of object
 #' @export
 #'
-ddsHandler <- function(file, output = ".", title = "") {
+ddsHandler <- function(file, output = ".", title = "", file_prefix = "") {
   # if (is.null(file) | is.na(file)) {
   #   stop("Please enter a filepath to a DESeqDataSet .rds file OR a DESeqDataSet object, input was either null or NA")
   # }
@@ -109,26 +109,28 @@ ddsHandler <- function(file, output = ".", title = "") {
 #'
 resultsHandler <- function(results,
                            title = "",
-                           output = ".") {
+                           output = ".",
+                           file_prefix = "" ) {
   if (is.data.frame(results)) {
     if (title == "") {
       title <- deparse(substitute(results))
       file_prefix <- title
       title <- gsub("_", " ", title)
     }
+
   } else if (is.character(results)) {
     if (output == "") {
       output <- dirname(results)
     }
+
     results <- as.data.frame(read.csv(results))
+
     if (title == "") {
       file_prefix <- gsub(".*RES-", "", results) %>%
         gsub(pattern = ".csv", replace = "")
 
       title <- gsub(pattern = "-", replace = " ", file_prefix) %>%
         gsub(pattern = "_", replace = " ")
-    } else {
-      file_prefix <- ""
     }
   } else {
     stop("input must be either a dataframe  or a valid file path to a results table.")
