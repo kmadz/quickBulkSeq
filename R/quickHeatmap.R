@@ -137,7 +137,7 @@ quickHeatmap <- function(file = NULL,
     treeheight_row = 0,
     treeheight_col = 0,
     #annotation_colors = ann_colors,
-    main = paste(input$title, "|", numSigs, "significant genes", sep = " ")  # Title of the heatmap,
+    main = paste(input$title, "|", numSigs, "significant genes", sep = " "),  # Title of the heatmap
     silent = TRUE
   )
   print(final)
