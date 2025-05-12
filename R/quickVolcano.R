@@ -1,4 +1,4 @@
-#' quickResults
+#' quickVolcano
 #'
 #' @param results a table of results of either a tibble format or csv
 #' @param title Character, the name of the plot to be shown

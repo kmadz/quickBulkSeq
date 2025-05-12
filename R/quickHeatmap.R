@@ -84,6 +84,10 @@ quickHeatmap <- function(file = NULL,
 
   if (is.null(targets)) {
     targets <- filtered_res$gene_name[1:numRows]
+    fontface_vector <- "plain"
+  } else {
+    is_significant <- targets %in% filtered_res$gene_name
+    fontface_vector <- ifelse(is_significant, "bold", "plain")
   }
 
   numSigs <- nrow(filtered_res)
@@ -126,15 +130,17 @@ quickHeatmap <- function(file = NULL,
     cluster_rows = clustRows,
     show_rownames = labelRows,
     labels_row = selected_genes$gene_name,
+    fontface_row =
     cluster_cols = clustCols,
     border_color = NA,
     annotation_col = annot_info,
     treeheight_row = 0,
     treeheight_col = 0,
     #annotation_colors = ann_colors,
-    main = paste(input$title, "|", numSigs, "significant genes", sep = " ")  # Title of the heatmap
+    main = paste(input$title, "|", numSigs, "significant genes", sep = " ")  # Title of the heatmap,
+    silent = TRUE
   )
-
+  print(final)
   dev.off()
 
   return (final)
