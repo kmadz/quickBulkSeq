@@ -4,7 +4,7 @@
 \alias{resultsHandler}
 \title{resultsHandler}
 \usage{
-resultsHandler(results, title = "", output = ".")
+resultsHandler(results, title = "", output = ".", file_prefix = "")
 }
 \arguments{
 \item{results}{a path to a results table in the form of "RES-name.csv" or a results table dataframe}

@@ -4,7 +4,7 @@
 \alias{ddsHandler}
 \title{ddsHandler}
 \usage{
-ddsHandler(file, output = ".", title = "")
+ddsHandler(file, output = ".", title = "", file_prefix = "")
 }
 \arguments{
 \item{file}{Filepath to a DESeqDataSet .rds file OR a DESeqDataSet object}

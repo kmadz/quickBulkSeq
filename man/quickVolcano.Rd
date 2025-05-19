@@ -2,7 +2,7 @@
 % Please edit documentation in R/quickVolcano.R
 \name{quickVolcano}
 \alias{quickVolcano}
-\title{quickResults}
+\title{quickVolcano}
 \usage{
 quickVolcano(
   results,
@@ -49,5 +49,5 @@ quickVolcano(
 A volcano plot
 }
 \description{
-quickResults
+quickVolcano
 }

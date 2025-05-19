@@ -12,12 +12,15 @@ quickHeatmap(
   info = "condition",
   clustRows = TRUE,
   clustCols = TRUE,
+  colOrder = NULL,
   labelRows = TRUE,
   numRows = 50,
   num = "",
   denom = "",
   padj = 0.05,
   save = TRUE,
+  onlySigs = FALSE,
+  onlyNonSigs = FALSE,
   color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)
 )
 }
@@ -35,6 +38,8 @@ quickHeatmap(
 \item{clustRows}{Logical, whether to cluster rows or not. default TRUE}
 
 \item{clustCols}{Logical, whether to cluster columns or not, default TRUE}
+
+\item{colOrder}{Character vector, order for columns}
 
 \item{labelRows}{Logical, whether to label rows or not, default TRUE}
 
