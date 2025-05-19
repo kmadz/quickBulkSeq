@@ -124,7 +124,9 @@ quickHeatmap <- function(file = NULL,
   get_asterisks <- function(gene_name) {
     if (!gene_name %in% filtered_res$gene_name) return("")
 
-    padj <- filtered_res$padj[filtered_res$gene_name == gene_name]
+    # duplicate handling
+    padj_vals <- filtered_res$padj[filtered_res$gene_name == gene_name]
+    padj <- min(padj_vals, na.rm = TRUE)
 
     if (padj < 0.001) return("***")
     if (padj < 0.01) return("**")

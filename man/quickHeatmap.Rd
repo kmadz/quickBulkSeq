@@ -19,8 +19,6 @@ quickHeatmap(
   denom = "",
   padj = 0.05,
   save = TRUE,
-  onlySigs = FALSE,
-  onlyNonSigs = FALSE,
   color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)
 )
 }
