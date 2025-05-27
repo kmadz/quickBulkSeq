@@ -15,6 +15,7 @@
 #' @param padj Double, value for p-adjusted value threshold, default 0.05
 #' @param save Logical, whether to save to output directory or not, default TRUE
 #' @param colOrder Character vector, order for columns
+#' @param boldSigs Logical, if significant genes should be bolded, default TRUE
 #'
 #' @importFrom pheatmap pheatmap
 #' @importFrom DESeq2 DESeq
@@ -41,6 +42,7 @@ quickHeatmap <- function(file = NULL,
                          denom = "",
                          padj = 0.05,
                          save = TRUE,
+                         boldSigs = TRUE,
                          color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)) {
   if (num == "" | denom == "") {
     stop("Numerator and denominator for results not specified")
@@ -181,15 +183,14 @@ quickHeatmap <- function(file = NULL,
     )
   }
 
-
+  
   final <- pheatmap(
     zscore,
     color = color,
     cluster_rows = clustRows,
     show_rownames = labelRows,
     #labels_row = selected_genes$gene_name,
-    labels_row = plot_labels,
-    #fontface_row = fontface_vector[match(rownames(zscore)[final$tree_row$order], selected_genes$gene_name)],
+    labels_row = (if (boldSigs) plot_labels else selected_genes$gene_name),
     cluster_cols = clustCols,
     border_color = NA,
     annotation_col = annot_info,
