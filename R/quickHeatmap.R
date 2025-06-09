@@ -105,11 +105,11 @@ quickHeatmap <- function(file = NULL,
 
   ### New code block
   if (onlySigs) {
-    targets <- sigs
+    targets <- unique(sigs)
   }
 
   if (onlyNonSigs) {
-    targets <- targets[!res$gene_name %in% targets]
+    targets <- unique(targets[!targets %in% sigs])
   }
   ###
 
