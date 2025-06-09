@@ -19,6 +19,9 @@ quickHeatmap(
   denom = "",
   padj = 0.05,
   save = TRUE,
+  boldSigs = TRUE,
+  onlySigs = FALSE,
+  onlyNonSigs = FALSE,
   color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)
 )
 }
@@ -50,6 +53,12 @@ quickHeatmap(
 \item{padj}{Double, value for p-adjusted value threshold, default 0.05}
 
 \item{save}{Logical, whether to save to output directory or not, default TRUE}
+
+\item{boldSigs}{Logical, if significant genes should be bolded, default TRUE}
+
+\item{onlySigs}{Logical, if heatmap should only should significant genes, default FALSE}
+
+\item{onlyNonSigs}{Logical, if heatmap should only should NON-significant genes, default FALSE}
 
 \item{color}{A color palette, default colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)}
 }
