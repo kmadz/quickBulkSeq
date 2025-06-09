@@ -95,11 +95,13 @@ quickHeatmap <- function(file = NULL,
   }
 
   if (is.null(targets)) {
+    numSigs <- nrow(filtered_res)
     targets <- filtered_res$gene_name[1:numRows]
     sigs <- targets
     fontface_vector <- "plain"
   } else {
     sigs <- filtered_res$gene_name[filtered_res$gene_name %in% targets]
+    numSigs <- length(sigs)
   }
 
 
@@ -113,7 +115,7 @@ quickHeatmap <- function(file = NULL,
   }
   ###
 
-  numSigs <- nrow(filtered_res)
+
 
   selected_genes <- g2name %>%
     filter(gene_name %in% targets) %>%
