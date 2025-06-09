@@ -16,6 +16,8 @@
 #' @param save Logical, whether to save to output directory or not, default TRUE
 #' @param colOrder Character vector, order for columns
 #' @param boldSigs Logical, if significant genes should be bolded, default TRUE
+#' @param onlySigs Logical, if heatmap should only should significant genes, default FALSE
+#' @param onlyNonSigs Logical, if heatmap should only should NON-significant genes, default FALSE
 #'
 #' @importFrom pheatmap pheatmap
 #' @importFrom DESeq2 DESeq
@@ -43,15 +45,16 @@ quickHeatmap <- function(file = NULL,
                          padj = 0.05,
                          save = TRUE,
                          boldSigs = TRUE,
+                         onlySigs = FALSE,
+                         onlyNonSigs = FALSE,
                          color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)) {
   if (num == "" | denom == "") {
     stop("Numerator and denominator for results not specified")
   }
 
-  # For future version: Add params onlySigs = FALSE, onlyNonSigs = FALSE
-  # if (onlySigs == TRUE & onlyNonSigs == TRUE) {
-  #   stop("Both onlySigs and onlyNonSigs are selected. Please only set one option to TRUE.")
-  # }
+  if (onlySigs == TRUE & onlyNonSigs == TRUE) {
+    stop("Both onlySigs and onlyNonSigs are selected. Please set only one option to TRUE.")
+  }
 
   input <- ddsHandler(file, ".", title = title)
   annot_info <- as.data.frame(colData(input$dds)[info])
@@ -99,14 +102,16 @@ quickHeatmap <- function(file = NULL,
     sigs <- filtered_res$gene_name[filtered_res$gene_name %in% targets]
   }
 
-  # save for later
-  # if (onlySigs) {
-  #   targets <- sigs
-  # }
-  #
-  # if (onlyNonSigs) {
-  #   targets <- targets[!filtered_res$gene_name %in% targets]
-  # }
+
+  ### New code block
+  if (onlySigs) {
+    targets <- sigs
+  }
+
+  if (onlyNonSigs) {
+    targets <- targets[!res$gene_name %in% targets]
+  }
+  ###
 
   numSigs <- nrow(filtered_res)
 
@@ -183,7 +188,7 @@ quickHeatmap <- function(file = NULL,
     )
   }
 
-  
+
   final <- pheatmap(
     zscore,
     color = color,
