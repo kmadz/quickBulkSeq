@@ -62,7 +62,7 @@ quickVolcano <- function(results,
     pCutoff = pCutoff,
     FCcutoff = FCcutoff,
     pointSize = 1.5,
-    labSize = 4,
+    labSize = labelSize,
     title = title,
     subtitle = ifelse(
       displayNumSigs == TRUE,
