@@ -45,7 +45,7 @@ quickVolcano <- function(results,
   }
 
   if (targets == "") {
-    top_genes <- filtered_res[order(abs(filtered_res$log2FoldChange), decreasing = TRUE), ][1:numTopGenes, ]
+    top_genes <- filtered_res[order(abs(filtered_res$padj), decreasing = TRUE), ][1:numTopGenes, ]
     top_genes <- top_genes$gene_id
   } else {
     top_genes <- targets
