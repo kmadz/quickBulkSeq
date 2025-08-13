@@ -2,7 +2,7 @@
 % Please edit documentation in R/quickHeatmap.R
 \name{quickHeatmap}
 \alias{quickHeatmap}
-\title{quickHeatmap}
+\title{Flexible and quick heatmap generation}
 \usage{
 quickHeatmap(
   file = NULL,
@@ -22,6 +22,8 @@ quickHeatmap(
   boldSigs = TRUE,
   onlySigs = FALSE,
   onlyNonSigs = FALSE,
+  width = 2400,
+  height = 1800,
   color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)
 )
 }
@@ -60,11 +62,17 @@ quickHeatmap(
 
 \item{onlyNonSigs}{Logical, if heatmap should only should NON-significant genes, default FALSE}
 
-\item{color}{A color palette, default colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)}
+\item{width}{Width of picture, default 2400 pixels}
+
+\item{height}{Height of picture, default 1800 pixels}
 }
 \value{
 A heatmap
 }
 \description{
-quickHeatmap
+Returns a pheatmap object based to user specifications.
+}
+\details{
+IMPORTANT: If the file input is a DESeqDataSet, it should be formatted as "dds_\link{VARNAME}".
+Likewise, if the file input is a filepath, it should be formatted as "dds_\link{VARNAME}.rds".
 }

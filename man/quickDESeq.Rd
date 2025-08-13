@@ -2,7 +2,7 @@
 % Please edit documentation in R/quickDESeq.R
 \name{quickDESeq}
 \alias{quickDESeq}
-\title{quickDESeq}
+\title{Quickly extract a DESeqDataSet with a simple design}
 \usage{
 quickDESeq(
   design_file,
@@ -37,4 +37,18 @@ A DESeqDataSet object
 }
 \description{
 Create a DESeqDataSet object using tximport and design terms from a design file.
+}
+\details{
+IMPORTANT: Design file MUST be either a table or a .csv with a naming convention
+of "design_\link{VARNAME}".
+
+Additionally, design files should have the following columns:
+\itemize{
+\item sample: name of the sample (e.g. A5, treated, etc.)
+\item file: name of the file (normally the same as the sample)
+\item folder: folder where the sample's abundance.h5 file can be found
+\item design terms: columns for desired terms (e.g. genotype, time, treatment, etc.)
+\item batch: batch variable to account for (if you would like to explicitly remove the batch effect,
+select batch = TRUE)
+}
 }

@@ -1,3 +1,6 @@
+# These functions are for handling different file/variable inputs, which then
+# returns a list with variables such as the prefix, filepath, etc.
+
 #' tableHandler
 #'
 #' @param design_file a design file of either .csv or dataframe type

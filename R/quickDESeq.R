@@ -1,6 +1,17 @@
-#' quickDESeq
+#' Quickly extract a DESeqDataSet with a simple design
 #'
 #' Create a DESeqDataSet object using tximport and design terms from a design file.
+#'
+#' IMPORTANT: Design file MUST be either a table or a .csv with a naming convention
+#' of "design_[VARNAME]".
+#'
+#' Additionally, design files should have the following columns:
+#' - sample: name of the sample (e.g. A5, treated, etc.)
+#' - file: name of the file (normally the same as the sample)
+#' - folder: folder where the sample's abundance.h5 file can be found
+#' - design terms: columns for desired terms (e.g. genotype, time, treatment, etc.)
+#' - batch: batch variable to account for (if you would like to explicitly remove the batch effect,
+#' select batch = TRUE)
 #'
 #' @param design_file CSV file path or data.frame with sample metadata.
 #' @param output File path to output directory
@@ -11,6 +22,7 @@
 #' @param pattern Pattern to substitue out for the design file when extracting title, default "design_"
 #' @param alignType What type of aligner was used to align BAM files, default "kallisto"
 #'
+#' @importFrom limma removeBatchEffect
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate select
 #' @importFrom tximport tximport

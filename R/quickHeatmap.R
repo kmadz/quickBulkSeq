@@ -1,4 +1,9 @@
-#' quickHeatmap
+#' Flexible and quick heatmap generation
+#'
+#' Returns a pheatmap object based to user specifications.
+#'
+#' IMPORTANT: If the file input is a DESeqDataSet, it should be formatted as "dds_[VARNAME]".
+#' Likewise, if the file input is a filepath, it should be formatted as "dds_[VARNAME].rds".
 #'
 #' @param file A DESeqDataSet or path to a DESeq .rds object
 #' @param title Character, title of plot
@@ -10,7 +15,6 @@
 #' @param numRows Integer, number of rows to display, default 50
 #' @param num Character, the numerator of the comparison
 #' @param denom Character, the denominator of the comparison
-#' @param color A color palette, default colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)
 #' @param output Character, path to output directory, default current directory
 #' @param padj Double, value for p-adjusted value threshold, default 0.05
 #' @param save Logical, whether to save to output directory or not, default TRUE
@@ -18,6 +22,8 @@
 #' @param boldSigs Logical, if significant genes should be bolded, default TRUE
 #' @param onlySigs Logical, if heatmap should only should significant genes, default FALSE
 #' @param onlyNonSigs Logical, if heatmap should only should NON-significant genes, default FALSE
+#' @param width Width of picture, default 2400 pixels
+#' @param height Height of picture, default 1800 pixels
 #'
 #' @importFrom pheatmap pheatmap
 #' @importFrom DESeq2 DESeq
@@ -47,6 +53,8 @@ quickHeatmap <- function(file = NULL,
                          boldSigs = TRUE,
                          onlySigs = FALSE,
                          onlyNonSigs = FALSE,
+                         width = 2400,
+                         height = 1800,
                          color = colorRampPalette(list.reverse(brewer.pal(11, "PRGn")))(100)) {
   if (num == "" | denom == "") {
     stop("Numerator and denominator for results not specified")
@@ -77,6 +85,7 @@ quickHeatmap <- function(file = NULL,
     as_tibble() %>%
     left_join(g2name, by = "gene_id") %>%
     arrange(padj)
+
 
   # get normalized counts
   norm_df <- as.data.frame(counts(input$dds, normalized = TRUE)) %>%
@@ -114,8 +123,6 @@ quickHeatmap <- function(file = NULL,
     targets <- unique(targets[!targets %in% sigs])
   }
   ###
-
-
 
   selected_genes <- g2name %>%
     filter(gene_name %in% targets) %>%
@@ -155,6 +162,7 @@ quickHeatmap <- function(file = NULL,
     })
   }
 
+  # store bold labels in case you want to bold sigs in rows
   bold_labels <- make_labels(rownames(zscore), sigs)
   plot_labels <- parse(text = bold_labels)
 
@@ -174,6 +182,7 @@ quickHeatmap <- function(file = NULL,
     annot_info <- annot_info[colOrder, , drop = FALSE]
   }
 
+  # check if we're gonna save, if so prepare output filepath and run png() to save heatmap
   if (save) {
     path <- file.path(input$output, input$file_prefix)
 
@@ -190,13 +199,21 @@ quickHeatmap <- function(file = NULL,
     )
   }
 
+  # run dev.off() repeatedly to clear all open panels, heatmaps will layer otherwise
+  while (!is.null(dev.list())) {
+    tryCatch({
+      dev.off()
+    }, error = function(e) {
 
+    })
+  }
+
+  # save the heatmap as a png
   final <- pheatmap(
     zscore,
     color = color,
     cluster_rows = clustRows,
     show_rownames = labelRows,
-    #labels_row = selected_genes$gene_name,
     labels_row = (if (boldSigs) plot_labels else selected_genes$gene_name),
     cluster_cols = clustCols,
     border_color = NA,
@@ -208,7 +225,7 @@ quickHeatmap <- function(file = NULL,
   )
 
   print(final)
-  if (save) dev.off()
+  dev.off()
 
   return (final)
 }
